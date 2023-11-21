@@ -23,12 +23,20 @@ grey_image = color.rgb2gray(color_image)
 # Krok 1: Zmniejszenie obrazu
 downsampled = nonlinear_downsample(grey_image, kernel_size=2, aggregate=np.max)
 
+# MSE dla pomniejszonego obrazu
+mse_downsampled = calculate_mse(original_grey, downsampled)
+print(f"MSE dla pomniejszonego obrazu: {mse_downsampled}")
+
 # Wyświetlenie pomniejszonego obrazu
 io.imshow(downsampled)
 io.show()
 
 # Krok 2: Powiększenie obrazu
 upsampled = image_interpolate(grey_image, kernel=np.mean, ratio=2)
+
+# MSE dla powiększonego obrazu
+mse_upsampled = calculate_mse(original_grey, upsampled)
+print(f"MSE dla powiększonego obrazu: {mse_upsampled}")
 
 # Wyświetlenie powiększonego obrazu
 io.imshow(upsampled)
