@@ -1,0 +1,35 @@
+
+import numpy as np
+from skimage.util import view_as_windows
+from skimage import io, color, transform
+from scipy.ndimage import gaussian_filter
+
+def nonlinear_downsample(image: np.array, aggregate: callable, kernel_size: int = 2) -> np.array:
+
+    windows = view_as_windows(image, window_shape=kernel_size, step=kernel_size)
+    return np.apply_over_axes(aggregate, windows, axes=(2, 3)).squeeze()
+
+def image_interpolate(image: np.array, kernel: callable, ratio: int) -> np.array:
+
+    height, width = image.shape[:2]
+    new_height, new_width = height * ratio, width * ratio
+    return gaussian_filter(image, sigma=(ratio-1)/2)  # Using Gaussian filter for interpolation
+
+# Wczytaj obraz
+color_image = io.imread(r"C:\Users\olawe\OneDrive\Obrazy\image1.jpg")
+color_image = transform.resize(color_image, output_shape=(1000, 1000, 3))
+grey_image = color.rgb2gray(color_image)
+
+# Krok 1: Zmniejszenie obrazu
+downsampled = nonlinear_downsample(grey_image, kernel_size=2, aggregate=np.max)
+
+# Wyświetlenie pomniejszonego obrazu
+io.imshow(downsampled)
+io.show()
+
+# Krok 2: Powiększenie obrazu
+upsampled = image_interpolate(grey_image, kernel=np.mean, ratio=2)
+
+# Wyświetlenie powiększonego obrazu
+io.imshow(upsampled)
+io.show()
